@@ -1,5 +1,3 @@
-# 484-project-theia
-
 ### CPTS 484: Group Project\
 ## Theia - Navigation App for Blind
 & Visually Impaired People\
