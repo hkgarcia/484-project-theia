@@ -1,0 +1,28 @@
+# node
+node_modules
+pnpm-lock.yaml
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+expo-env.d.ts
+
+# build artifacts
+dist
+.build
+
+# OS/IDE
+.DS_Store
+*.swp
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# expo
+.expo
+.expo-shared
+
+# misc
+coverage
