@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // custom components
 import { NavigateButton } from "../../components/NavigateButton";
 import { EmergencyButton } from "../../components/EmergencyButton";
+import { GlobalVoiceListener } from '../../components/GlobalVoiceListener';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         {/* main button components */}
         <NavigateButton />
         <EmergencyButton />
+        <GlobalVoiceListener />
         
       </View>
     </SafeAreaView>
