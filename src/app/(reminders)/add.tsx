@@ -19,7 +19,7 @@ export default function AddReminderPage() {
     const handleSubmit = () => {
         setShowSuccess(true);
         setTimeout(() => {
-            router.push('/(tabs)/reminders');
+            router.back();
         }, 2000);
     };
 
@@ -28,7 +28,7 @@ export default function AddReminderPage() {
             {/* header */}
             <View style={styles.header}>
                 <Pressable
-                    onPress={() => router.push('/(tabs)/reminders')}
+                    onPress={() => router.back()}
                     style={styles.headerButton}
                 >
                     <ArrowLeft size={28} color="white" />

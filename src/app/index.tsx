@@ -2,21 +2,25 @@ import { Text, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // custom components
-import { NavigateButton } from "../../components/NavigateButton";
-import { EmergencyButton } from "../../components/EmergencyButton";
-import { GlobalVoiceListener } from '../../components/GlobalVoiceListener';
+import { NavigateButton } from "../components/NavigateButton";
+import { EmergencyButton } from "../components/EmergencyButton";
+import { GlobalVoiceListener } from '../components/GlobalVoiceListener';
+import TabBar from "../components/TabBar";
 
-export default function App() {
+export default function Home() {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.main}>
 
-        {/* main button components */}
+      {/* main button components */}
+      <View style={styles.main}>
         <NavigateButton />
         <EmergencyButton />
         <GlobalVoiceListener />
-        
       </View>
+
+      {/* new tab bar */}
+      <TabBar />
+
     </SafeAreaView>
   );
 }
@@ -32,5 +36,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 20,
-  }
+  },
 });

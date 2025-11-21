@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-import { GlobalVoiceListener } from '../../components/GlobalVoiceListener';
+import { GlobalVoiceListener } from '../components/GlobalVoiceListener';
 
 export default function SettingsScreen() {
     const router = useRouter();

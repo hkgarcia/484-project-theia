@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Mic, Bell, Plus, Clock, MapPin, ArrowLeft } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlobalVoiceListener } from '../../components/GlobalVoiceListener';
+import { GlobalVoiceListener } from '../components/GlobalVoiceListener';
 
 interface ReminderType {
     id: number;
