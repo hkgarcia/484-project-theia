@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { Mic } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export function GlobalVoiceListener() {
 
@@ -40,7 +39,7 @@ export function GlobalVoiceListener() {
     }, [isListening]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
 
             {!isMinimized && isListening && (
                 <View style={styles.listeningBox}>
@@ -57,7 +56,7 @@ export function GlobalVoiceListener() {
                 <Mic size={28} color="#fff" />
             </TouchableOpacity>
 
-        </SafeAreaView>
+        </View>
     );
 }
 

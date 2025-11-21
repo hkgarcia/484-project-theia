@@ -1,27 +1,8 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    TextInput,
-    ScrollView,
-    StyleSheet,
-    FlatList,
-    Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, FlatList, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {
-    ArrowLeft,
-    MapPin,
-    User,
-    Search,
-    Clock,
-    ChevronDown,
-    Navigation as NavigationIcon,
-    Mic,
-    AlertTriangle,
-} from 'lucide-react-native';
+import { ArrowLeft, MapPin, User, Search, Clock, ChevronDown, Navigation as NavigationIcon, Mic, AlertTriangle } from 'lucide-react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { MapView } from '../../components/MapView';
@@ -32,7 +13,6 @@ import { CollisionAlert } from '../../components/CollisionAlert';
 
 type RouteOption = { id: string; name: string; eta: string; distance: string };
 type Place = { name: string; visits: number; lastVisited: string };
-
 
 export default function NavigateScreen() {
     const router = useRouter();
@@ -502,14 +482,16 @@ const styles = StyleSheet.create({
     buttonText: { color: '#fff', fontWeight: '600' },
 
     navigatingContainer: { flex: 1, justifyContent: 'space-between' },
-    mapContainer: { width: '100%', padding: 12 },
-    statusContainer: { width: '100%', padding: 12 },
-    statusCard: { padding: 12, backgroundColor: '#222237', borderRadius: 12, marginBottom: 12 },
+    mapContainer: { width: '100%', padding: 16 },
+    
+    // status
+    statusContainer: { width: '100%', padding: 14 },
+    statusCard: { padding: 14, backgroundColor: '#222237', borderRadius: 12 },
     statusHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
     statusLeft: { flexDirection: 'row', alignItems: 'center' },
-    statusTitle: { fontWeight: '700', marginLeft: 8, color: '#fff' },
-    safeText: { color: '#10B981', fontWeight: '600' },
-    statusDesc: { color: '#9CA3AF' },
+    statusTitle: { fontWeight: '700', marginLeft: 8, color: '#fff', fontSize: 20 },
+    safeText: { color: '#10B981', fontWeight: '600', fontSize: 18 },
+    statusDesc: { color: '#9CA3AF', fontSize: 18 },
 
-    controlsContainer: { width: '100%', padding: 12, marginBottom: 32 },
-});
+    controlsContainer: { width: '100%', padding: 12 },
+}); 

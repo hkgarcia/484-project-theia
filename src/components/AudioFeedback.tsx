@@ -1,7 +1,6 @@
-import { Text, StyleSheet, Animated } from 'react-native';
+import { Text, StyleSheet, Animated, View } from 'react-native';
 import React, { useEffect, useState } from "react";
 import { Volume2 } from "lucide-react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 interface AudioFeedbackProps {
     message: string;
@@ -37,24 +36,24 @@ export function AudioFeedback({ message }: AudioFeedbackProps) {
     });
 
     return (
-        <SafeAreaView style={styles.container}>
-            <SafeAreaView style={styles.card}>
-                <SafeAreaView style={styles.row}>
-                    <SafeAreaView style={[styles.iconContainer, isPlaying && styles.iconPlaying]}>
+        <View style={styles.container}>
+            <View style={styles.card}>
+                <View style={styles.row}>
+                    <View style={[styles.iconContainer, isPlaying && styles.iconPlaying]}>
                         <Volume2 size={24} color="white" />
-                    </SafeAreaView>
+                    </View>
                     <Text style={styles.title}>Audio Guidance</Text>
-                </SafeAreaView>
+                </View>
 
                 <Text style={styles.message}>{message}</Text>
 
-                <SafeAreaView style={styles.progressBar}>
+                <View style={styles.progressBar}>
                     <Animated.View
                         style={[styles.progressFill, { width: widthInterpolation }]}
                     />
-                </SafeAreaView>
-            </SafeAreaView>
-        </SafeAreaView>
+                </View>
+            </View>
+        </View>
     );
 }
 
@@ -62,7 +61,6 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     paddingHorizontal: 16,
-    marginTop: 16,
   },
   card: {
     backgroundColor: "#222237",
@@ -90,7 +88,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontWeight: "bold",
     color: "white",
-    fontSize: 16,
+    fontSize: 20,
   },
   message: {
     color: "white",

@@ -1,6 +1,5 @@
-import { Text, StyleSheet, Pressable } from 'react-native';
+import { Text, StyleSheet, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
     ArrowLeft,
     ArrowRight,
@@ -20,8 +19,8 @@ export function DirectionControls({
     const router = useRouter();
 
     return (
-        <SafeAreaView style={styles.container}>
-            <SafeAreaView style={styles.row}>
+        <View style={styles.container}>
+            <View style={styles.row}>
                 <DirectionButton
                     direction="left"
                     icon={<ArrowLeft size={40} color="white" />}
@@ -45,19 +44,19 @@ export function DirectionControls({
                     isActive={currentDirection === "right"}
                     onPress={() => onDirectionChange("right")}
                 />
-            </SafeAreaView>
+            </View>
 
-            <SafeAreaView style={styles.stopContainer}>
+            <View style={styles.stopContainer}>
                 <DirectionButton
                     direction="stop"
-                    icon={<StopCircle size={40} color="white" />}
+                    icon={<StopCircle size={30} color="white" />}
                     label="Stop Navigation"
                     isActive={currentDirection === "stop"}
                     onPress={() => onDirectionChange("stop")}
                     isStop
                 />
-            </SafeAreaView>
-        </SafeAreaView>
+            </View>
+        </View>
     );
 }
 

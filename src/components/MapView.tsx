@@ -1,81 +1,80 @@
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from "react-native-safe-area-context";
 import { MapPin, Navigation } from "lucide-react-native";
 
 interface MapViewProps {
-    currentDirection: string;
-    destination: string;
-    distance: string;
+  currentDirection: string;
+  destination: string;
+  distance: string;
 }
 
 export function MapView({
-    currentDirection,
-    destination,
-    distance,
+  currentDirection,
+  destination,
+  distance,
 }: MapViewProps) {
 
-    return (
-        <SafeAreaView style={styles.container}>
-            {/* Simplified visual map */}
-            <SafeAreaView style={styles.centerWrapper}>
-                <SafeAreaView style={styles.mapBox}>
-                    {/* Current position */}
-                    <SafeAreaView style={styles.currentPosition}>
-                        <Navigation
-                            size={32}
-                            color="#3b82f6"
-                            style={{
-                                transform: [{ rotate: `${getRotationDegree(currentDirection)}deg` }],
-                            }}
-                        />
-                        <SafeAreaView style={styles.youBadge}>
-                            <Text style={styles.badgeText}>You</Text>
-                        </SafeAreaView>
-                    </SafeAreaView>
+  return (
+    <View style={styles.container}>
+      {/* Simplified visual map */}
+      <View style={styles.centerWrapper}>
+        <View style={styles.mapBox}>
+          {/* Current position */}
+          <View style={styles.currentPosition}>
+            <Navigation
+              size={32}
+              color="#3b82f6"
+              style={{
+                transform: [{ rotate: `${getRotationDegree(currentDirection)}deg` }],
+              }}
+            />
+            <View style={styles.youBadge}>
+              <Text style={styles.badgeText}>You</Text>
+            </View>
+          </View>
 
-                    {/* Destination */}
-                    <SafeAreaView style={styles.destination}>
-                        <MapPin size={32} color="#ef4444" />
-                        <SafeAreaView style={styles.destinationBadge}>
-                            <Text style={styles.badgeText}>{destination}</Text>
-                        </SafeAreaView>
-                    </SafeAreaView>
+          {/* Destination */}
+          <View style={styles.destination}>
+            <MapPin size={32} color="#ef4444" />
+            <View style={styles.destinationBadge}>
+              <Text style={styles.badgeText}>{destination}</Text>
+            </View>
+          </View>
 
-                    {/* Path line */}
-                    <SafeAreaView style={styles.pathLine} />
-                </SafeAreaView>
-            </SafeAreaView>
+          {/* Path line */}
+          <View style={styles.pathLine} />
+        </View>
+      </View>
 
-            {/* Bottom distance bar */}
-            <SafeAreaView style={styles.bottomBar}>
-                <Text style={styles.distanceText}>
-                    Distance to destination: {distance}
-                </Text>
-            </SafeAreaView>
-        </SafeAreaView>
-    );
+      {/* Bottom distance bar */}
+      <View style={styles.bottomBar}>
+        <Text style={styles.distanceText}>
+          Distance to destination: {distance}
+        </Text>
+      </View>
+    </View>
+  );
 }
 
 function getRotationDegree(direction: string): number {
-    switch (direction) {
-        case "left":
-            return 270;
-        case "right":
-            return 90;
-        case "forward":
-            return 0;
-        case "stop":
-            return 0;
-        default:
-            return 0;
-    }
+  switch (direction) {
+    case "left":
+      return 270;
+    case "right":
+      return 90;
+    case "forward":
+      return 0;
+    case "stop":
+      return 0;
+    default:
+      return 0;
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 180,
+    height: 200,
     backgroundColor: "#222237",
     borderRadius: 16,
     overflow: "hidden",
@@ -151,6 +150,7 @@ const styles = StyleSheet.create({
     padding: 8,
     backgroundColor: "#1a1a2d",
     alignItems: "center",
+    paddingVertical: 15
   },
 
   distanceText: {

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { Text, StyleSheet, Pressable, Animated, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from "react-native-safe-area-context";
 import { AlertTriangle } from "lucide-react-native";
 
 interface CollisionAlertProps {
@@ -31,11 +30,11 @@ export function CollisionAlert({ onDismiss }: CollisionAlertProps) {
     }, []);
 
     return (
-        <SafeAreaView style={styles.overlay}>
+        <View style={styles.overlay}>
             <Animated.View style={[styles.card, { transform: [{ scale: pulse }] }]}>
-                <SafeAreaView style={styles.iconContainer}>
+                <View style={styles.iconContainer}>
                     <AlertTriangle size={48} color="white" />
-                </SafeAreaView>
+                </View>
 
                 <Text style={styles.title}>CAUTION</Text>
 
@@ -47,7 +46,7 @@ export function CollisionAlert({ onDismiss }: CollisionAlertProps) {
                     <Text style={styles.buttonText}>I Understand</Text>
                 </Pressable>
             </Animated.View>
-        </SafeAreaView>
+        </View>
     );
 }
 
