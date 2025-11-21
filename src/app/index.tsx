@@ -15,8 +15,9 @@ export default function Home() {
       <View style={styles.main}>
         <NavigateButton />
         <EmergencyButton />
-        <GlobalVoiceListener />
       </View>
+
+       <GlobalVoiceListener />
 
       {/* new tab bar */}
       <TabBar />
