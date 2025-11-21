@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 
 
+
 export default function TabsLayout() {
 
   return (
@@ -19,7 +20,7 @@ export default function TabsLayout() {
           },
           tabBarLabelStyle: {
             fontSize: 18,
-            color:"#222237",
+            color: "#222237",
             paddingTop: 10,
           },
         }}
