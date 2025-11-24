@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, FlatList, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, Platform, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { ArrowLeft, MapPin, User, Search, Clock, ChevronDown, Navigation as NavigationIcon, Mic, AlertTriangle } from 'lucide-react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,19 +17,26 @@ type Place = { name: string; visits: number; lastVisited: string };
 export default function NavigateScreen() {
     const router = useRouter();
 
+    // destination state (screen 1)
     const [destination, setDestination] = React.useState<string>('Room 302');
+
+    // navigation states (screen 2)
     const [distance, setDistance] = React.useState<string>('15 meters');
     const [currentDirection, setCurrentDirection] = React.useState<string>('forward');
     const [isNavigating, setIsNavigating] = React.useState<boolean>(false);
     const [audioMessage, setAudioMessage] = React.useState<string>('');
+
+    // route options
     const [showCustomDestination, setShowCustomDestination] = React.useState<boolean>(false);
     const [customDestination, setCustomDestination] = React.useState<string>('');
     const [showRouteOptions, setShowRouteOptions] = React.useState<boolean>(false);
     const [selectedRoute, setSelectedRoute] = React.useState<string>('fastest');
+
+    // other modes / features
     const [showCollisionAlert, setShowCollisionAlert] = React.useState<boolean>(false);
     const [showCaretakerMode, setShowCaretakerMode] = React.useState<boolean>(false);
 
-    // Sim data
+    // dummy data
     const routes: RouteOption[] = [
         { id: 'fastest', name: 'Fastest Route', eta: '2 min', distance: '15 meters' },
         { id: 'elevator', name: 'Via Elevator', eta: '4 min', distance: '30 meters' },
@@ -42,20 +49,52 @@ export default function NavigateScreen() {
         { name: 'Library', visits: 12, lastVisited: '3 days ago' },
     ];
 
-    // Handlers (kept same semantics)
+    // handlers
+
+    // navigation screen (2)
     const startNavigation = () => {
+        const steps = customDirections[destination];
+
+        // check for any caretaker instructions first
+        if (steps && steps.length > 0) {
+            setIsNavigating(true);
+            setCurrentStepIndex(0);
+            setAudioMessage(steps[0]);
+            return;
+        }
+
+        // otherwise use dummy data
         setIsNavigating(true);
         setAudioMessage(`Starting navigation to ${destination}. Proceed 5 steps forward.`);
 
-        // simulate collision
+        // simulate collision alert 10 seconds into navigation
         setTimeout(() => {
             setShowCollisionAlert(true);
             setTimeout(() => setShowCollisionAlert(false), 5000);
         }, 10000);
     };
 
+    // updating direction for audio guidance when we click direction buttons (navigation screen 2)
     const handleDirectionChange = (direction: string) => {
         setCurrentDirection(direction);
+        const steps = customDirections[destination];
+
+        // check for any caretaker instructions first
+        if (steps && steps.length > 0) {
+            const next = currentStepIndex + 1;
+
+            if (next < steps.length) {
+                setCurrentStepIndex(next);
+                setAudioMessage(steps[next]);
+            } else {
+                setAudioMessage("You have reached your destination!");
+                setTimeout(() => setIsNavigating(false), 3000); // timeout of 3 seconds before exiting
+                alert('Navigation complete! Exiting navigation mode.');
+            }
+            return;
+        }
+
+        // otherwise use dummy data
         switch (direction) {
             case 'left':
                 setAudioMessage('Turn left and proceed 10 steps forward.');
@@ -72,6 +111,7 @@ export default function NavigateScreen() {
         }
     };
 
+    // input custom destination 
     const handleCustomDestinationSubmit = () => {
         if (customDestination.trim().length > 0) {
             setDestination(customDestination.trim());
@@ -80,6 +120,7 @@ export default function NavigateScreen() {
         }
     };
 
+    // route option handlers
     const toggleRouteOptions = () => setShowRouteOptions((s) => !s);
     const selectRoute = (routeId: string) => {
         setSelectedRoute(routeId);
@@ -87,7 +128,36 @@ export default function NavigateScreen() {
         if (r) setDistance(r.distance);
         setShowRouteOptions(false);
     };
+
+    // caretaker mode 
     const toggleCaretakerMode = () => setShowCaretakerMode((s) => !s);
+
+    // caretaker instructions for navigation
+    const [currentStepIndex, setCurrentStepIndex] = React.useState<number>(0); // destination specific steps (during navigation)
+    const [caretakerInput, setCaretakerInput] = React.useState<string>(''); // caretaker input
+    const [customDirections, setCustomDirections] = React.useState<Record<string, string[]>>({}); // directions per destination, stored in dictionary
+    const [caretakerDestination, setCaretakerDestination] = React.useState<string>(""); // selected destination for caretaker instructions
+
+    // read in and handle caretaker directions
+    const saveCaretakerDirections = () => {
+        // cleaning input
+        const steps = caretakerInput
+            .split('\n')
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
+
+        // store info
+        setCustomDirections(prev => ({
+            ...prev,
+            [caretakerDestination]: steps
+        }));
+
+        // clear input and close caretaker UI
+        setCaretakerInput('');
+        setShowCaretakerMode(false);
+
+        alert(`Caretaker directions have successfully been stored for ${caretakerDestination}!`);
+    };
 
     return (
         <SafeAreaView style={styles.safe}>
@@ -122,31 +192,72 @@ export default function NavigateScreen() {
 
             {/* Caretaker Mode Panel */}
             {showCaretakerMode && (
-                <View style={styles.caretakerPanel}>
-                    <Text style={styles.caretakerTitle}>Caretaker Mode</Text>
-                    <Text style={styles.caretakerDesc}>Configure routes and directions for the user.</Text>
+                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} >
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <View style={styles.caretakerPanel}>
+                            <ScrollView>
+                                <Text style={styles.caretakerTitle}>Caretaker Mode</Text>
+                                <Text style={styles.caretakerDesc}>Configure routes and directions for the user.</Text>
 
-                    <View style={styles.formGroup}>
-                        <Text style={styles.label}>Add step-by-step directions:</Text>
-                        <TextInput
-                            multiline
-                            numberOfLines={3}
-                            style={styles.textarea}
-                            placeholder="E.g., Exit classroom, turn right, walk 20 steps..."
-                            placeholderTextColor="#9CA3AF"
-                        />
+                                <View style={styles.formGroup}>
 
-                        <Text style={[styles.label, { marginTop: 10 }]}>Set navigation preferences:</Text>
-                        {/* simple picker replacement */}
-                        <View style={styles.picker}>
-                            <Text style={styles.pickerText}>Detailed instructions ▾</Text>
+                                    {/* select destination */}
+                                    <Text style={styles.label}>Select destination:</Text>
+
+                                    {/* picker */}
+                                    <View style={styles.picker}>
+                                        <Picker
+                                            selectedValue={caretakerDestination}
+                                            onValueChange={(value) => setCaretakerDestination(value)}
+                                            itemStyle={{ fontSize: 16, color: '#fff' }}  // iOS
+                                        >
+                                            {/* destinations according to frequent places for now */}
+                                            <Picker.Item label="-- Select a destination --" value="" />
+                                            {frequentPlaces.map((place) => (
+                                                <Picker.Item key={place.name} label={place.name} value={place.name} />
+                                            ))}
+                                        </Picker>
+                                    </View>
+
+                                    {/* add directions */}
+                                    <Text style={styles.label}>Add step-by-step directions:</Text>
+                                    <TextInput
+                                        multiline
+                                        numberOfLines={10}
+
+                                        // updating according to caretaker input
+                                        value={caretakerInput}
+                                        onChangeText={setCaretakerInput}
+
+                                        style={styles.textarea}
+
+                                        // placeholder text
+                                        placeholder={`E.g., \nTurn right\nWalk 20 steps\nTurn left\nWalk 10 steps\nTake ramp for 30 steps\nTurn right`}
+                                        placeholderTextColor="#9CA3AF"
+                                    />
+
+                                    <TouchableOpacity onPress={saveCaretakerDirections} style={styles.saveButton}>
+                                        <Text style={styles.saveButtonText}>Save Directions</Text>
+                                    </TouchableOpacity>
+
+                                    {/* display saved steps/direction in caretaker mode if we have any */}
+                                    {(customDirections[caretakerDestination] ?? []).length > 0 && (
+                                        <View style={{ marginTop: 12 }}>
+                                            <Text style={styles.label}>Current steps for navigation:</Text>
+
+                                            <View style={styles.textarea}>
+                                                {(customDirections[caretakerDestination] ?? []).map((step, i) => (
+                                                    <Text key={i} style={{ color: "#fff", lineHeight: 25 }}>• {step}</Text>
+                                                ))}
+                                            </View>
+                                        </View>
+                                    )}
+
+                                </View>
+                            </ScrollView>
                         </View>
-
-                        <TouchableOpacity style={styles.saveButton}>
-                            <Text style={styles.saveButtonText}>Save Directions</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                    </TouchableWithoutFeedback>
+                </KeyboardAvoidingView>
             )}
 
             {/* Main content */}
@@ -350,10 +461,10 @@ const styles = StyleSheet.create({
         padding: 12,
         backgroundColor: '#2d2d45',
     },
-    caretakerTitle: { color: '#fff', fontSize: 16, fontWeight: '700', marginBottom: 6 },
-    caretakerDesc: { color: '#d1d5db', marginBottom: 10 },
+    caretakerTitle: { color: '#fff', fontSize: 20, fontWeight: '700', marginTop: 5, marginBottom: 8 },
+    caretakerDesc: { color: '#d1d5db', fontSize: 16, marginBottom: 15 },
     formGroup: { flexDirection: 'column' },
-    label: { color: '#fff', fontSize: 13, fontWeight: '600', marginBottom: 6 },
+    label: { color: '#fff', fontSize: 18, fontWeight: '600', marginBottom: 6 },
     textarea: {
         width: '100%',
         padding: 8,
@@ -361,10 +472,12 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         color: '#fff',
         textAlignVertical: 'top',
+        fontSize: 16,
+        lineHeight: 24,
     },
     picker: {
         marginTop: 4,
-        padding: 12,
+        marginBottom: 12,
         backgroundColor: '#1a1a2d',
         borderRadius: 8,
     },
@@ -483,7 +596,7 @@ const styles = StyleSheet.create({
 
     navigatingContainer: { flex: 1, justifyContent: 'space-between' },
     mapContainer: { width: '100%', padding: 16 },
-    
+
     // status
     statusContainer: { width: '100%', padding: 14 },
     statusCard: { padding: 14, backgroundColor: '#222237', borderRadius: 12 },
