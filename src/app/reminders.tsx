@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Mic, Bell, Plus, Clock, MapPin, ArrowLeft } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { router, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalVoiceListener } from '../components/GlobalVoiceListener';
 
@@ -136,8 +136,7 @@ function ReminderAlert({ reminder, onDismiss }: ReminderAlertProps) {
                     <Pressable
                         style={styles.alertButtonNavigate}
                         onPress={() => {
-                            onDismiss();
-                            // router.push('/navigate')
+                            router.push('/(navigate)');
                         }}
                     >
                         <Text style={styles.alertButtonTextNavigate}>Navigate</Text>

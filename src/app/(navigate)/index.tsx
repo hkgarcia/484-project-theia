@@ -322,7 +322,7 @@ export default function NavigateScreen() {
                                         <DestinationButton
                                             key={place.name}
                                             name={place.name}
-                                            description={`${place.visits} visits - Last: ${place.lastVisited}`}
+                                            description={`${place.visits} visits • Last: ${place.lastVisited} • ETA: ${place.name === 'Room 302' ? '2 min' : place.name === 'Cafeteria' ? '5 min' : '8 min'}`}
                                             isSelected={destination === place.name}
                                             onPress={() => setDestination(place.name)}
                                         />
