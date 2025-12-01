@@ -11,6 +11,9 @@ import { AudioFeedback } from '../../components/AudioFeedback';
 import { GlobalVoiceListener } from '../../components/GlobalVoiceListener';
 import { CollisionAlert } from '../../components/CollisionAlert';
 
+import { triggerObstacle } from "@/state/appState";
+import { appState } from "@/state/appState";
+
 type RouteOption = { id: string; name: string; eta: string; distance: string };
 type Place = { name: string; visits: number; lastVisited: string };
 
@@ -25,6 +28,17 @@ export default function NavigateScreen() {
     const [currentDirection, setCurrentDirection] = React.useState<string>('forward');
     const [isNavigating, setIsNavigating] = React.useState<boolean>(false);
     const [audioMessage, setAudioMessage] = React.useState<string>('');
+
+    // obstacle alert state
+    const [activeObstacle, setActiveObstacle] = React.useState(appState.obstacles.activeObstacle);
+
+    // global obstacle events
+    React.useEffect(() => {
+        const update = () => setActiveObstacle(appState.obstacles.activeObstacle);
+        appState.events.on("obstacleUpdate", update);
+
+        return () => appState.events.off("obstacleUpdate", update);
+    }, []);
 
     // route options
     const [showCustomDestination, setShowCustomDestination] = React.useState<boolean>(false);
@@ -67,11 +81,15 @@ export default function NavigateScreen() {
         setIsNavigating(true);
         setAudioMessage(`Starting navigation to ${destination}. Proceed 5 steps forward.`);
 
+        
         // simulate collision alert 10 seconds into navigation
-        setTimeout(() => {
+        /*setTimeout(() => {
             setShowCollisionAlert(true);
             setTimeout(() => setShowCollisionAlert(false), 5000);
         }, 10000);
+        */
+
+
     };
 
     // updating direction for audio guidance when we click direction buttons (navigation screen 2)
@@ -110,6 +128,26 @@ export default function NavigateScreen() {
                 break;
         }
     };
+
+
+    React.useEffect(() => {
+        if (!audioMessage) return;
+
+        const msg = audioMessage.toLowerCase();
+
+        if (msg.includes("stairs")) {
+            triggerObstacle("Stairs Ahead");
+        }
+
+        if (msg.includes("obstacle")) {
+            triggerObstacle("Obstacle on Path");
+        }
+        if (msg.includes("ramp")) {
+            triggerObstacle("Ramp Ahead");
+        }
+
+        
+    }, [audioMessage]);
 
     // input custom destination 
     const handleCustomDestinationSubmit = () => {
@@ -163,7 +201,7 @@ export default function NavigateScreen() {
         <SafeAreaView style={styles.safe}>
 
             {/* Collision Alert (top-level overlay component) */}
-            {showCollisionAlert && <CollisionAlert onDismiss={() => setShowCollisionAlert(false)} />}
+            
 
             {/* Header */}
             <View style={styles.header}>
@@ -371,8 +409,18 @@ export default function NavigateScreen() {
                 <View style={styles.navigatingContainer}>
                     <View style={styles.mapContainer}>
                         <MapView currentDirection={currentDirection} destination={destination} distance={distance} />
-                    </View>
-
+                    </View> 
+                    
+                    {activeObstacle && (
+                        <CollisionAlert
+                            message={activeObstacle}
+                            onDismiss={() => {
+                                appState.obstacles.activeObstacle = null;
+                                appState.events.emit("obstacleUpdate");
+                            }}
+                        />
+                    )}
+                    
                     <AudioFeedback message={audioMessage} />
 
                     <View style={styles.statusContainer}>
@@ -607,4 +655,6 @@ const styles = StyleSheet.create({
     statusDesc: { color: '#9CA3AF', fontSize: 18 },
 
     controlsContainer: { width: '100%', padding: 12 },
+
+
 }); 

@@ -6,22 +6,43 @@ import { ArrowLeft, AlertTriangle, Phone, MapPin, Mic, X } from "lucide-react-na
 
 // custom components
 import { GlobalVoiceListener } from "@/components/GlobalVoiceListener";
+import { appState, triggerFall, sendEmergencyAlert, resetEmergency  } from "@/state/appState";
+
 
 export default function EmergencyPage() {
     const router = useRouter();
 
     // TODO: implement backend and real data for emergency handling
     // static data used instead
-    const [emergencyType, setEmergencyType] = useState("Fall Detected");
-    const [location, setLocation] = useState("Room 302 - Mathematics Building");
-    const [isAlertSent, setIsAlertSent] = useState(false);
+
+    // these should be replaced with global state
+    //const [emergencyType, setEmergencyType] = useState("Fall Detected");
+    // const [location, setLocation] = useState("Room 302 - Mathematics Building");
+    // const [isAlertSent, setIsAlertSent] = useState(false);
+
+    const [emergencyData, setEmergencyData] = useState(appState.emergency);
+
     const [showCaretakerView, setShowCaretakerView] = useState(false);
     const [isRecordingMessage, setIsRecordingMessage] = useState(false);
 
     // simulate emergency alert sent (after 3 seconds - dummy)
-    useEffect(() => {
+    /*useEffect(() => {
         const timer = setTimeout(() => setIsAlertSent(true), 3000);
         return () => clearTimeout(timer);
+    }, []);
+    */
+
+    // backend emegency state updates
+    useEffect(() => {
+        const update = () => {
+            setEmergencyData({ ...appState.emergency });
+        };
+
+        appState.events.on("emergencyUpdate", update);
+
+        return () => {
+            appState.events.off("emergencyUpdate", update);
+        };
     }, []);
 
     return (
@@ -57,18 +78,43 @@ export default function EmergencyPage() {
                             style={{ alignSelf: "center", marginBottom: 16 }}
                         />
                         <Text style={styles.alertTitle}>Emergency Alert</Text>
-                        <Text style={styles.alertType}>{emergencyType}</Text>
+                        <Text style={styles.alertType}>
+                            {emergencyData.isFalling ? "Fall Detected" : "No Emergency"}
+                        </Text>
+
+                        {emergencyData.isFalling && !emergencyData.alertSent && (
+                            <Text style={{ color: "white", textAlign: "center", marginBottom: 10 }}>
+                                Sending alert in {emergencyData.countdown ?? 3} seconds...
+                            </Text>
+                        )}
+
+                        {emergencyData.isFalling && !emergencyData.alertSent && (
+                            <Pressable
+                                onPress={() => {
+                                    resetEmergency();
+                                }}
+                                style={{
+                                    backgroundColor: "white",
+                                    padding: 10,
+                                    borderRadius: 10,
+                                    alignSelf: "center",
+                                    marginBottom: 10,
+                                }}
+                            >
+                                <Text style={{ color: "#B00020", fontWeight: "bold" }}>Cancel Alert</Text>
+                            </Pressable>
+                        )}
 
                         {/* sending status */}
                         <View style={styles.sendStatusWrapper}>
                             <View
                                 style={[
                                     styles.sendStatusBubble,
-                                    isAlertSent ? styles.sent : styles.sending,
+                                    emergencyData.alertSent ? styles.sent : styles.sending,
                                 ]}
                             >
                                 <Text style={styles.sendStatusText}>
-                                    {isAlertSent ? "Alert Sent" : "Sending..."}
+                                    {emergencyData.alertSent ? "Alert Sent" : "Sending..."}
                                 </Text>
                             </View>
                         </View>
@@ -132,13 +178,24 @@ export default function EmergencyPage() {
                             <Text style={styles.locationTitle}>Your Location</Text>
                         </View>
 
-                        <Text style={styles.locationText}>{location}</Text>
+                        <Text style={styles.locationText}>{emergencyData.userLocation}</Text>
 
                         <View style={styles.locationMap}>
                             <Text style={{ color: "#888" }}>Map location data</Text>
                         </View>
                     </View>
-                </View>
+                
+
+                    {/* DEBUG BUTTON — remove later */}
+                    <Pressable
+                        onPress={() => {
+                            triggerFall();
+                        }}
+                        style={{ backgroundColor: "white", padding: 10, margin: 20, borderRadius: 10 }}
+                    >
+                        <Text style={{ color: "black", textAlign: "center" }}>Trigger Fall</Text>
+                    </Pressable>
+                </View>            
 
             ) : (
                 // caretaker view
@@ -152,11 +209,13 @@ export default function EmergencyPage() {
                             <View style={styles.caretakerAlertRow}>
                                 <AlertTriangle size={20} color="white" />
                                 <Text style={styles.caretakerAlertText}>
-                                    {emergencyType}
+                                    {emergencyData.isFalling ? "Fall Detected" : "No Emergency"}
                                 </Text>
                             </View>
                             <Text style={styles.caretakerText}>
-                                Detected at 10:42 AM
+                                {emergencyData.alertSent
+                                    ? `Detected at ${emergencyData.alertTime}`
+                                    : "Waiting for alert..."}
                             </Text>
                         </View>
 
@@ -168,7 +227,7 @@ export default function EmergencyPage() {
                         <Text style={[styles.sectionLabel, { marginTop: 12 }]}>
                             Location:
                         </Text>
-                        <Text style={styles.caretakerText}>{location}</Text>
+                        <Text style={styles.caretakerText}>{emergencyData.userLocation}</Text>
 
                         {/* map view */}
                         <View style={styles.caretakerMap}>
@@ -188,6 +247,9 @@ export default function EmergencyPage() {
                 </View>
             )}
 
+            
+
+            
             <GlobalVoiceListener />
         </SafeAreaView>
     );

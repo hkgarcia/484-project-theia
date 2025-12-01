@@ -5,9 +5,10 @@ import { AlertTriangle } from "lucide-react-native";
 
 interface CollisionAlertProps {
     onDismiss: () => void;
+    message?: string;
 }
 
-export function CollisionAlert({ onDismiss }: CollisionAlertProps) {
+export function CollisionAlert({ onDismiss, message }: CollisionAlertProps) {
 
     const pulse = useRef(new Animated.Value(1)).current;
 
@@ -39,7 +40,7 @@ export function CollisionAlert({ onDismiss }: CollisionAlertProps) {
                 <Text style={styles.title}>CAUTION</Text>
 
                 <Text style={styles.message}>
-                    Obstacle detected ahead. Stop and change direction.
+                    {message ?? "Obstacle detected ahead. Be aware."}
                 </Text>
 
                 <Pressable style={styles.button} onPress={onDismiss}>
