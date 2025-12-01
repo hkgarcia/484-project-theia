@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Text, StyleSheet, Pressable, Animated, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AlertTriangle } from "lucide-react-native";
+import { speak } from '../app/(navigate)/speech';
 
 interface CollisionAlertProps {
     onDismiss: () => void;
@@ -28,6 +29,7 @@ export function CollisionAlert({ onDismiss, message }: CollisionAlertProps) {
                 }),
             ])
         ).start();
+        speak("Warning. Obstacle ahead.")
     }, []);
 
     return (

@@ -13,6 +13,7 @@ import { CollisionAlert } from '../../components/CollisionAlert';
 
 import { triggerObstacle } from "@/state/appState";
 import { appState } from "@/state/appState";
+import { speak } from './speech'
 
 type RouteOption = { id: string; name: string; eta: string; distance: string };
 type Place = { name: string; visits: number; lastVisited: string };
@@ -65,6 +66,12 @@ export default function NavigateScreen() {
 
     // handlers
 
+    React.useEffect(() => {
+        if (audioMessage) {
+            speak(audioMessage);
+        }
+    }, [audioMessage]);
+
     // navigation screen (2)
     const startNavigation = () => {
         const steps = customDirections[destination];
@@ -81,15 +88,12 @@ export default function NavigateScreen() {
         setIsNavigating(true);
         setAudioMessage(`Starting navigation to ${destination}. Proceed 5 steps forward.`);
 
-        
         // simulate collision alert 10 seconds into navigation
         /*setTimeout(() => {
             setShowCollisionAlert(true);
             setTimeout(() => setShowCollisionAlert(false), 5000);
         }, 10000);
         */
-
-
     };
 
     // updating direction for audio guidance when we click direction buttons (navigation screen 2)
@@ -146,7 +150,7 @@ export default function NavigateScreen() {
             triggerObstacle("Ramp Ahead");
         }
 
-        
+
     }, [audioMessage]);
 
     // input custom destination 
@@ -201,7 +205,7 @@ export default function NavigateScreen() {
         <SafeAreaView style={styles.safe}>
 
             {/* Collision Alert (top-level overlay component) */}
-            
+
 
             {/* Header */}
             <View style={styles.header}>
@@ -409,8 +413,8 @@ export default function NavigateScreen() {
                 <View style={styles.navigatingContainer}>
                     <View style={styles.mapContainer}>
                         <MapView currentDirection={currentDirection} destination={destination} distance={distance} />
-                    </View> 
-                    
+                    </View>
+
                     {activeObstacle && (
                         <CollisionAlert
                             message={activeObstacle}
@@ -420,7 +424,7 @@ export default function NavigateScreen() {
                             }}
                         />
                     )}
-                    
+
                     <AudioFeedback message={audioMessage} />
 
                     <View style={styles.statusContainer}>
